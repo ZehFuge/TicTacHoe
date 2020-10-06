@@ -38,7 +38,7 @@ Problem 2.1: Done
     continue running. If the user presses the ESC button, the game will close.
     ###   End    ###
 
-Problem 3.1:
+Problem 3.1: Work in progress
     The game isn't counting the amount of wins for cross and circle
 
 Problem 4.1: Done
