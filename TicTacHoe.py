@@ -1,5 +1,5 @@
 """
-Problem 1.1: Solved
+Problem 1.1: Done
     Already set tileStates can be overwritten.
 
     ### Solution ###
