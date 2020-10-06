@@ -60,30 +60,37 @@ Problem 3.1: Done
 
 Problem 4.1: Done
     If the games ends as draw, nothing happens. The games needs to check itself, if every tile is filled
-    and there is no winner. If the case is True, all tiles need to be reseted
+    and there is no winner. If the case is True, all tiles need to be reset
 
     ### Solution ###
     After the winChecker() checks the win condition, the drawChecker checks if the game is set draw.
-    Therefore a for loop loops from range(0, 9 (index for tiles dictonary)) and raises the setTileCounter
+    Therefore a for loop loops from range(0, 9 (index for tiles dictionary)) and raises the setTileCounter
     += 1.
     If a tile is blank (state = None), setTileCounter wont rise.
     If setTileCounter reaches 9 (all tiles are filled and not blank) and the winner is still None,
-    all tiles are reseted and the game will continue, until there is a winner.
+    all tiles are reset and the game will continue, until there is a winner.
     Before this happens, the game waits for few seconds, so the game doesnt accidentally take
     two mouse inputs
     ###   End    ###
 
 Problem 5.1: Done
-    The game seems to static and needs more dynamity. Therefore, every blank tile which collides with
-    the mouse, should be displayed in gray as a visual change. Also player with no knowlegde would be
+    The game seems to static and needs to be more dynamic. Therefore, every blank tile which collides with
+    the mouse, should be displayed in gray as a visual change. Also player with no knowledge would be
     trained.
 
     ### Solution ###
     The drawTiles() function got another if statement for drawing blank tiles. Therefore, the function
     also gets the mouseX and mouseY variables. If the mouse collides with an blank tile, the tile
-    is display in gray. Already taken tiles, dont change their color while mouseover.
+    is display in gray. Already taken tiles, don't change their color while mouseover.
 
-    This function is a nice viusal gimmik, but also teaches newbies, which tiles they can use.
+    This function is a nice visual gimmick, but also teaches newbies, which tiles they can use.
+    ###   End    ###
+
+Problem 6.1:
+    Whats about the turn order? The games starts with cross, but nobody knows, especially after a game reset.
+
+    ### Solution ###
+    Set the icon of the mouse cursor as x or o, depending of the mousestate (True = cross, False = circle)
     ###   End    ###
 """
 
@@ -102,6 +109,9 @@ windowHeight = 537
 
 window = pygame.display.set_mode((windowWidth, windowHeight))
 pygame.display.set_caption("TicTacHoe - Preorder Edition")
+pygame.mouse.set_visible(0)
+
+convertGrey = (132, 126, 135)
 
 # load pictures of tile states
 blankTile = pygame.image.load("Images/blank.png")
@@ -109,35 +119,37 @@ crossTile = pygame.image.load("Images/cross.png")
 circleTile = pygame.image.load("Images/circle.png")
 winTile = pygame.image.load("Images/win.png")
 replayTile = pygame.image.load("Images/replay.png")
-greyTile = pygame.image.load("Images/blankMouseOver.png") # for mouseover visuals
+greyTile = pygame.image.load("Images/blankMouseOver.png")  # for mouseover visuals
+mouseCross = pygame.image.load("Images/mouseCross.png")
+mouseCircle = pygame.image.load("Images/mouseCircle.png")
 
 # set information for the wincounters for X and Y
-winCounterX = {"image" : pygame.image.load("Images/winX.png"),
-        "startingX" : 5,
-        "startingY": 404,
-        "wins" : 0}
+winCounterX = {"image": pygame.image.load("Images/winX.png"),
+               "startingX": 5,
+               "startingY": 404,
+               "wins": 0}
 
-winCounterO = {"image" : pygame.image.load("Images/winO.png"),
-        "startingX" : 204,
-        "startingY" : 404,
-        "wins" : 0}
+winCounterO = {"image": pygame.image.load("Images/winO.png"),
+               "startingX": 204,
+               "startingY": 404,
+               "wins": 0}
 
 # game info and variables
 # set info for tiles
 # tileStartingX, tileStartingY,
 # tileState (None = blank, True = cross, False = circle)
 # win is set, if a row/column/cross win condition is given
-tiles = [{"x" : 5, "y" : 5, "state" : None, "win" : False},  # Tile 1 from row 1
-         {"x": 138, "y": 5, "state": None, "win" : False},  # Tile 2 from row 1
-         {"x": 271, "y": 5, "state": None, "win" : False},  # Tile 3 from row 1
+tiles = [{"x": 5, "y": 5, "state": None, "win": False},  # Tile 1 from row 1
+         {"x": 138, "y": 5, "state": None, "win": False},  # Tile 2 from row 1
+         {"x": 271, "y": 5, "state": None, "win": False},  # Tile 3 from row 1
 
-         {"x": 5, "y": 138, "state": None, "win" : False},  # Tile 4 from row 2
-         {"x": 138, "y": 138, "state": None, "win" : False},  # Tile 5 from row 2
-         {"x": 271, "y": 138, "state": None, "win" : False},  # Tile 6 from row 2
+         {"x": 5, "y": 138, "state": None, "win": False},  # Tile 4 from row 2
+         {"x": 138, "y": 138, "state": None, "win": False},  # Tile 5 from row 2
+         {"x": 271, "y": 138, "state": None, "win": False},  # Tile 6 from row 2
 
-         {"x": 5, "y": 271, "state": None, "win" : False},  # Tile 7 from row 3
-         {"x": 138, "y": 271, "state": None, "win" : False},  # Tile 8 from row 3
-         {"x": 271, "y": 271, "state": None, "win" : False}, ]  # Tile 9 from row 3
+         {"x": 5, "y": 271, "state": None, "win": False},  # Tile 7 from row 3
+         {"x": 138, "y": 271, "state": None, "win": False},  # Tile 8 from row 3
+         {"x": 271, "y": 271, "state": None, "win": False}, ]  # Tile 9 from row 3
 
 # the tile is an square, meaning all sides are even
 tileSize = 128
@@ -199,8 +211,8 @@ def drawTiles():
                 and tiles[index]["state"] is not False \
                 and not tiles[index]["win"]:
             if tiles[index]["x"] < mouseX < (tiles[index]["x"] + tileSize) \
-                and tiles[index]["y"] < mouseY < (tiles[index]["y"] + tileSize):
-                    window.blit(greyTile, (tiles[index]["x"], tiles[index]["y"]))
+                    and tiles[index]["y"] < mouseY < (tiles[index]["y"] + tileSize):
+                window.blit(greyTile, (tiles[index]["x"], tiles[index]["y"]))
             else:
                 window.blit(blankTile, (tiles[index]["x"], tiles[index]["y"]))
                 # print("Blank printed")
@@ -213,9 +225,15 @@ def drawTiles():
         # draw the win counter tiles
         # but, only redraw them, if the score changed. Or the score layer gets overwritten
         if newScoreX > oldScoreX \
-            or newScoreY > oldScoreY:
+                or newScoreY > oldScoreY:
             window.blit(winCounterX["image"], (winCounterX["startingX"], winCounterX["startingY"]))
             window.blit(winCounterO["image"], (winCounterO["startingX"], winCounterO["startingY"]))
+
+        # draw the mouseState as cursor for orientation
+        if mouseState:
+            window.blit(mouseCross, (pygame.mouse.get_pos()))
+        else:
+            window.blit(mouseCircle, (pygame.mouse.get_pos()))
 
     pygame.display.update()
     return
@@ -260,139 +278,68 @@ def winChecker():
     # check for win conditions. Also set tileState to win condition if true
     # True = cross
     # False = circle
-    # check rows for win condition
-    if tiles[0]["state"] and tiles[1]["state"] and tiles[2]["state"]\
-            and tiles[0]["state"] is not None \
-            and tiles[1]["state"] is not None \
-            and tiles[2]["state"] is not None:
-        winner = True
-        tiles[0]["win"] = True
-        tiles[1]["win"] = True
-        tiles[2]["win"] = True
-    if not tiles[0]["state"] and not tiles[1]["state"] and not tiles[2]["state"] \
-            and tiles[0]["state"] is not None \
-            and tiles[1]["state"] is not None \
-            and tiles[2]["state"] is not None:
-        winner = False
-        tiles[0]["win"] = True
-        tiles[1]["win"] = True
-        tiles[2]["win"] = True
-    if tiles[3]["state"] and tiles[4]["state"] and tiles[5]["state"] \
-            and tiles[3]["state"] is not None \
-            and tiles[4]["state"] is not None \
-            and tiles[5]["state"] is not None:
-        winner = True
-        tiles[3]["win"] = True
-        tiles[4]["win"] = True
-        tiles[5]["win"] = True
-    if not tiles[3]["state"] and not tiles[4]["state"] and not tiles[5]["state"] \
-            and tiles[3]["state"] is not None \
-            and tiles[4]["state"] is not None \
-            and tiles[5]["state"] is not None:
-        winner = False
-        tiles[3]["win"] = True
-        tiles[4]["win"] = True
-        tiles[5]["win"] = True
-    if tiles[6]["state"] and tiles[7]["state"] and tiles[8]["state"] \
-            and tiles[6]["state"] is not None \
-            and tiles[7]["state"] is not None \
-            and tiles[8]["state"] is not None:
-        winner = True
-        tiles[6]["win"] = True
-        tiles[7]["win"] = True
-        tiles[8]["win"] = True
-    if not tiles[6]["state"] and not tiles[7]["state"] and not tiles[8]["state"] \
-            and tiles[6]["state"] is not None \
-            and tiles[7]["state"] is not None \
-            and tiles[8]["state"] is not None:
-        winner = False
-        tiles[6]["win"] = True
-        tiles[7]["win"] = True
-        tiles[8]["win"] = True
 
-    # check columns for win condition
-    if tiles[0]["state"] and tiles[3]["state"] and tiles[6]["state"] \
-            and tiles[0]["state"] is not None \
-            and tiles[3]["state"] is not None \
-            and tiles[6]["state"] is not None:
-        winner = True
-        tiles[0]["win"] = True
-        tiles[3]["win"] = True
-        tiles[6]["win"] = True
-    if not tiles[0]["state"] and not tiles[3]["state"] and not tiles[6]["state"] \
-            and tiles[0]["state"] is not None \
-            and tiles[3]["state"] is not None \
-            and tiles[6]["state"] is not None:
-        winner = False
-        tiles[0]["win"] = True
-        tiles[3]["win"] = True
-        tiles[6]["win"] = True
-    if tiles[1]["state"] and tiles[4]["state"] and tiles[7]["state"] \
-            and tiles[1]["state"] is not None \
-            and tiles[4]["state"] is not None \
-            and tiles[7]["state"] is not None:
-        winner = True
-        tiles[1]["win"] = True
-        tiles[4]["win"] = True
-        tiles[7]["win"] = True
-    if not tiles[1]["state"] and not tiles[4]["state"] and not tiles[7]["state"] \
-            and tiles[1]["state"] is not None \
-            and tiles[4]["state"] is not None \
-            and tiles[7]["state"] is not None:
-        winner = False
-        tiles[1]["win"] = True
-        tiles[4]["win"] = True
-        tiles[7]["win"] = True
-    if tiles[2]["state"] and tiles[5]["state"] and tiles[8]["state"] \
-            and tiles[2]["state"] is not None \
-            and tiles[5]["state"] is not None \
-            and tiles[8]["state"] is not None:
-        winner = True
-        tiles[2]["win"] = True
-        tiles[5]["win"] = True
-        tiles[8]["win"] = True
-    if not tiles[2]["state"] and not tiles[5]["state"] and not tiles[8]["state"] \
-            and tiles[2]["state"] is not None \
-            and tiles[5]["state"] is not None \
-            and tiles[8]["state"] is not None:
-        winner = False
-        tiles[2]["win"] = True
-        tiles[5]["win"] = True
-        tiles[8]["win"] = True
+    # check for rows
+    if tiles[0]["state"] == tiles[1]["state"] == tiles[2]["state"] \
+            and tiles[0]["state"] is not None and tiles[1]["state"] is not None and tiles[2]["state"] is not None:
+        tiles[0]["win"], tiles[1]["win"], tiles[2]["win"] = True, True, True
+        if tiles[0]["state"] and tiles[1]["state"] and tiles[2]["state"]:
+            winner = True
+        else:
+            winner = False
+    if tiles[3]["state"] == tiles[4]["state"] == tiles[5]["state"] \
+            and tiles[3]["state"] is not None and tiles[4]["state"] is not None and tiles[5]["state"] is not None:
+        tiles[3]["win"], tiles[4]["win"], tiles[5]["win"] = True, True, True
+        if tiles[3]["state"] and tiles[4]["state"] and tiles[5]["state"]:
+            winner = True
+        if not tiles[3]["state"] and not tiles[4]["state"] and not tiles[5]["state"]:
+            winner = False
+    if tiles[6]["state"] == tiles[7]["state"] == tiles[8]["state"] \
+            and tiles[6]["state"] is not None and tiles[7]["state"] is not None and tiles[8]["state"] is not None:
+        tiles[6]["win"], tiles[7]["win"], tiles[8]["win"] = True, True, True
+        if tiles[6]["state"] and tiles[7]["state"] and tiles[8]["state"]:
+            winner = True
+        if not tiles[6]["state"] and not tiles[7]["state"] and not tiles[8]["state"]:
+            winner = False
 
-    # check cross for win condition
-    if tiles[0]["state"] and tiles[4]["state"] and tiles[8]["state"] \
-            and tiles[0]["state"] is not None \
-            and tiles[4]["state"] is not None \
-            and tiles[8]["state"] is not None:
-        winner = True
-        tiles[0]["win"] = True
-        tiles[4]["win"] = True
-        tiles[8]["win"] = True
-    if not tiles[0]["state"] and not tiles[4]["state"] and not tiles[8]["state"] \
-            and tiles[0]["state"] is not None \
-            and tiles[4]["state"] is not None \
-            and tiles[8]["state"] is not None:
-        winner = False
-        tiles[0]["win"] = True
-        tiles[4]["win"] = True
-        tiles[8]["win"] = True
-    if tiles[6]["state"] and tiles[4]["state"] and tiles[2]["state"] \
-            and tiles[6]["state"] is not None \
-            and tiles[4]["state"] is not None \
-            and tiles[2]["state"] is not None:
-        winner = True
-        tiles[6]["win"] = True
-        tiles[4]["win"] = True
-        tiles[2]["win"] = True
-    if not tiles[6]["state"] and not tiles[4]["state"] and not tiles[2]["state"] \
-            and tiles[6]["state"] is not None \
-            and tiles[4]["state"] is not None \
-            and tiles[2]["state"] is not None:
-        winner = False
-        tiles[6]["win"] = True
-        tiles[4]["win"] = True
-        tiles[2]["win"] = True
+    # check for columns
+    if tiles[0]["state"] == tiles[3]["state"] == tiles[6]["state"] \
+            and tiles[0]["state"] is not None and tiles[3]["state"] is not None and tiles[6]["state"] is not None:
+        tiles[0]["win"], tiles[3]["win"], tiles[6]["win"] = True, True, True
+        if tiles[0]["state"] and tiles[3]["state"] and tiles[6]["state"]:
+            winner = True
+        if not tiles[0]["state"] and not tiles[3]["state"] and not tiles[6]["state"]:
+            winner = False
+    if tiles[1]["state"] == tiles[4]["state"] == tiles[7]["state"] \
+            and tiles[1]["state"] is not None and tiles[4]["state"] is not None and tiles[7]["state"] is not None:
+        tiles[1]["win"], tiles[4]["win"], tiles[7]["win"] = True, True, True
+        if tiles[1]["state"] and tiles[4]["state"] and tiles[7]["state"]:
+            winner = True
+        if not tiles[1]["state"] and not tiles[4]["state"] and not tiles[7]["state"]:
+            winner = False
+    if tiles[2]["state"] == tiles[5]["state"] == tiles[8]["state"] \
+            and tiles[2]["state"] is not None and tiles[5]["state"] is not None and tiles[8]["state"] is not None:
+        tiles[2]["win"], tiles[5]["win"], tiles[8]["win"] = True, True, True
+        if tiles[2]["state"] and tiles[5]["state"] and tiles[8]["state"]:
+            winner = True
+        if not tiles[2]["state"] and not tiles[5]["state"] and not tiles[8]["state"]:
+            winner = False
+
+    # check for diagonals
+    if tiles[0]["state"] == tiles[4]["state"] == tiles[8]["state"] \
+            and tiles[0]["state"] is not None and tiles[4]["state"] is not None and tiles[8]["state"] is not None:
+        tiles[0]["win"], tiles[4]["win"], tiles[8]["win"] = True, True, True
+        if tiles[0]["state"] and tiles[4]["state"] and tiles[8]["state"]:
+            winner = True
+        if not tiles[0]["state"] and not tiles[4]["state"] and not tiles[8]["state"]:
+            winner = False
+    if tiles[6]["state"] == tiles[4]["state"] == tiles[2]["state"] \
+            and tiles[6]["state"] is not None and tiles[4]["state"] is not None and tiles[2]["state"] is not None:
+        tiles[6]["win"], tiles[4]["win"], tiles[2]["win"] = True, True, True
+        if tiles[6]["state"] and tiles[4]["state"] and tiles[2]["state"]:
+            winner = True
+        if not tiles[6]["state"] and not tiles[4]["state"] and not tiles[2]["state"]:
+            winner = False
 
 
 def replayScreen():
@@ -405,7 +352,7 @@ def replayScreen():
 
 def resetTiles():
     # reset every value to its starting value
-    global  tiles
+    global tiles
     tiles = [{"x": 5, "y": 5, "state": None, "win": False},  # Tile 1 from row 1
              {"x": 138, "y": 5, "state": None, "win": False},  # Tile 2 from row 1
              {"x": 271, "y": 5, "state": None, "win": False},  # Tile 3 from row 1
@@ -423,7 +370,7 @@ def resetValues():
     global winner, mouseState
 
     winner = None
-    mouseState = True   # game always starts with cross / True
+    mouseState = True  # game always starts with cross / True
 
     # set the background to black again
     pygame.draw.rect(window, (0, 0, 0), (0, 0, 404, 404), 0)
@@ -442,10 +389,11 @@ def drawChecker():
     # print(setTileCounter)
 
     if setTileCounter == 9 \
-        and winner is None:
+            and winner is None:
         resetTiles()
 
     return setTileCounter
+
 
 def raiseWin():
     global winner, winCounterX, winCounterO
@@ -474,7 +422,7 @@ def drawWins():
     winsOfO = myfont.render(saveWins0, False, (0, 0, 0))
 
     # print the created win output for both players
-    window.blit(winsOfX, (winCounterX["startingX"]+ 75, winCounterX["startingY"] + 35))
+    window.blit(winsOfX, (winCounterX["startingX"] + 75, winCounterX["startingY"] + 35))
     window.blit(winsOfO, (winCounterO["startingX"] + 75, winCounterO["startingY"] + 35))
 
     pygame.display.update()
@@ -487,7 +435,7 @@ def scoreRefreshCheck():
     newScoreY = winCounterO["wins"]
 
     if newScoreX > oldScoreX \
-        or newScoreY > oldScoreY:
+            or newScoreY > oldScoreY:
         # drawTiles() needs to be first
         # otherwise the new number will be display over the old one
         drawTiles()
@@ -496,6 +444,7 @@ def scoreRefreshCheck():
     # refresh the "new" old values
     oldScoreX = newScoreX
     oldScoreY = newScoreY
+
 
 # main loop
 while winner is None:
@@ -534,28 +483,18 @@ while winner is None:
         GAME_TIME.wait(100)
 
     if winner or not winner and winner is not None:
-        # show winning line and wait bevor asking to play again
+        # show winning line and wait before asking to play again
         # ask player to play again
+        print(winner)
         raiseWin()
         scoreRefreshCheck()
         drawTiles()
         drawWins()
-        GAME_TIME.wait(1000)
+        GAME_TIME.wait(750)
         replayScreen()
-        while winner is not None:
-            for event in GAME_EVENTS.get():
-                if event.type == pygame.QUIT:
-                    quitGame()
-
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_SPACE:
-                        # reset values to start values
-                        # also changes winner to None
-                        # so this loop will end, and the main loop starts running again
-                        resetTiles()
-                        resetValues()
-                    if event.key == pygame.K_ESCAPE:
-                        quitGame()
+        resetTiles()
+        resetValues()
+        winner = None
 
     # updates the change on "window"
     pygame.display.update()
