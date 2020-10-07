@@ -1,36 +1,38 @@
 """
 Problem 1.1: Done
-    Already set tileStates can be overwritten.
+    Already set tileState can be overwritten.
+
 
     ### Solution ###
     An if-statement in the changeState() function checks, if the chosen tile is blank.
     If not, the function does nothing. The player state also doesn't change.
     ###   End    ###
 
+
 Problem 2.1: Done
     There is no win condition checker at the moment. Therefore, there is no end.
+
 
     ### Solution ###
     The function winChecker() was created. It checks for the right tiles[index]["state"] order and declares a winner.
     True = cross wins
     False = Circle wins
-
     If someone wins, the game closes because of missing restart conditions. Those are part of
     the Problem 2.2
     ###   End    ###
 
+
     Problem 2.2: Done
     The winner isn't displayed and you can't restart the game if wanted.
-
     The biggest problem at the moment is the wrong tiles[]["state"] handling. The 5 is seen as a "False" value.
     Therefore a new isWinning variable is needed in the tiles dictionary. So for showing the showWin image,
     another argument is needed in the drawTiles() function
+
 
     ### Solution ###
     The tiles[] dictonary got another statement named win (default = False). After checking a true
     winning condition, the winning tiles are set as win = True. Therefore they can be displayed by crowns.
     The system waits for 1 second, so the users can realize who won.
-
     After that, the main loops condition is False and another loop inside the main loop starts.
     The graphical output is "Press "Space" to play again". If the user presses the space bar,
     all the game values are resetted and the game starts from beginning. This is done in the
@@ -38,8 +40,10 @@ Problem 2.1: Done
     continue running. If the user presses the ESC button, the game will close.
     ###   End    ###
 
+
 Problem 3.1: Done
-    The game isn't counting the amount of wins for cross and circle
+    The game isn't counting the amount of wins for cross and circle.
+
 
     ### Solution ###
     Every players dictonary got another statement named "wins". By default it starts at 0.
@@ -47,9 +51,11 @@ Problem 3.1: Done
     Meanwhile the scores are drawn all the time.
     ###   End    ###
 
+
     Problem 3.2: Done
     Drawing the scores all the time lets the displayed scores flash/blink all the time.
     This is pretty annoying.
+
 
     ### Solution ###
     Before the player win tiles and its score are displayed, its been checked for change.
@@ -58,9 +64,11 @@ Problem 3.1: Done
     is displayed
     ###   End    ###
 
+
 Problem 4.1: Done
     If the games ends as draw, nothing happens. The games needs to check itself, if every tile is filled
     and there is no winner. If the case is True, all tiles need to be reset
+
 
     ### Solution ###
     After the winChecker() checks the win condition, the drawChecker checks if the game is set draw.
@@ -73,24 +81,29 @@ Problem 4.1: Done
     two mouse inputs
     ###   End    ###
 
+
 Problem 5.1: Done
     The game seems to static and needs to be more dynamic. Therefore, every blank tile which collides with
     the mouse, should be displayed in gray as a visual change. Also player with no knowledge would be
     trained.
 
+
     ### Solution ###
     The drawTiles() function got another if statement for drawing blank tiles. Therefore, the function
     also gets the mouseX and mouseY variables. If the mouse collides with an blank tile, the tile
     is display in gray. Already taken tiles, don't change their color while mouseover.
-
     This function is a nice visual gimmick, but also teaches newbies, which tiles they can use.
     ###   End    ###
 
-Problem 6.1:
+
+Problem 6.1: Done
     Whats about the turn order? The games starts with cross, but nobody knows, especially after a game reset.
 
     ### Solution ###
-    Set the icon of the mouse cursor as x or o, depending of the mousestate (True = cross, False = circle)
+    The icon of the mouse is being changed by the mouseState variable (True = cross, False = circle).
+
+    While importing those images, WHITE is set as alpha channel and being removed through
+    pygame.image.load().convert() and .set_colorkey(WHITE)
     ###   End    ###
 """
 
@@ -111,7 +124,10 @@ window = pygame.display.set_mode((windowWidth, windowHeight))
 pygame.display.set_caption("TicTacHoe - Preorder Edition")
 pygame.mouse.set_visible(0)
 
+# pre defined colors
 convertGrey = (132, 126, 135)
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
 
 # load pictures of tile states
 blankTile = pygame.image.load("Images/blank.png")
@@ -120,8 +136,13 @@ circleTile = pygame.image.load("Images/circle.png")
 winTile = pygame.image.load("Images/win.png")
 replayTile = pygame.image.load("Images/replay.png")
 greyTile = pygame.image.load("Images/blankMouseOver.png")  # for mouseover visuals
-mouseCross = pygame.image.load("Images/mouseCross.png")
-mouseCircle = pygame.image.load("Images/mouseCircle.png")
+
+# mouse icons import and convert to remove alpha channel (WHITE)
+mouseCross = pygame.image.load("Images/mouseCross.png").convert()
+mouseCross.set_colorkey(WHITE)
+mouseCircle = pygame.image.load("Images/mouseCircle.png").convert()
+mouseCircle.set_colorkey(WHITE)
+
 
 # set information for the wincounters for X and Y
 winCounterX = {"image": pygame.image.load("Images/winX.png"),
@@ -184,6 +205,9 @@ def quitGame():
 def drawTiles():
     global tiles, winCounterX, winCounterO, oldScoreX, oldScoreY, newScoreX, newScoreY, mouseX, mouseY, tileSize
 
+    # first of all, draw a blank screen for refresh
+    window.fill((0, 0, 0))
+
     for index in range(0, 9):
         # print(tiles[index]["state"], " ", tiles[index]["win"])
 
@@ -222,12 +246,13 @@ def drawTiles():
                 and [tiles[index]["win"] is not None]:
             window.blit(winTile, (tiles[index]["x"], tiles[index]["y"]))
 
-        # draw the win counter tiles
-        # but, only redraw them, if the score changed. Or the score layer gets overwritten
-        if newScoreX > oldScoreX \
-                or newScoreY > oldScoreY:
-            window.blit(winCounterX["image"], (winCounterX["startingX"], winCounterX["startingY"]))
-            window.blit(winCounterO["image"], (winCounterO["startingX"], winCounterO["startingY"]))
+        # # draw the win counter tiles
+        # # but, only redraw them, if the score changed. Or the score layer gets overwritten
+        # if newScoreX > oldScoreX \
+        #         or newScoreY > oldScoreY:
+        window.blit(winCounterX["image"], (winCounterX["startingX"], winCounterX["startingY"]))
+        window.blit(winCounterO["image"], (winCounterO["startingX"], winCounterO["startingY"]))
+        drawWins()
 
         # draw the mouseState as cursor for orientation
         if mouseState:
@@ -235,7 +260,7 @@ def drawTiles():
         else:
             window.blit(mouseCircle, (pygame.mouse.get_pos()))
 
-    pygame.display.update()
+    pygame.display.flip()
     return
 
 
@@ -342,14 +367,6 @@ def winChecker():
             winner = False
 
 
-def replayScreen():
-    # this screen shows the player the event key to play again
-    global tiles
-    window.blit(replayTile, (tiles[3]["x"], tiles[3]["y"]))
-
-    pygame.display.update()
-
-
 def resetTiles():
     # reset every value to its starting value
     global tiles
@@ -370,7 +387,9 @@ def resetValues():
     global winner, mouseState
 
     winner = None
-    mouseState = True  # game always starts with cross / True
+    # mouseState doesn't change anymore, so the player who lost,
+    # will start in the next round
+    # mouseState = True  # game always starts with cross / True
 
     # set the background to black again
     pygame.draw.rect(window, (0, 0, 0), (0, 0, 404, 404), 0)
@@ -405,6 +424,7 @@ def raiseWin():
 
 
 def drawWins():
+    # draws only when called
     global winCounterX, winCounterO
 
     myfont = pygame.font.SysFont("Arial Black", 75)
@@ -425,7 +445,9 @@ def drawWins():
     window.blit(winsOfX, (winCounterX["startingX"] + 75, winCounterX["startingY"] + 35))
     window.blit(winsOfO, (winCounterO["startingX"] + 75, winCounterO["startingY"] + 35))
 
-    pygame.display.update()
+    # no need to flip the screen, because its already happens in drawTiles()
+    # otherwise the numbers start flickering
+
 
 
 def scoreRefreshCheck():
@@ -485,13 +507,10 @@ while winner is None:
     if winner or not winner and winner is not None:
         # show winning line and wait before asking to play again
         # ask player to play again
-        print(winner)
         raiseWin()
         scoreRefreshCheck()
         drawTiles()
-        drawWins()
         GAME_TIME.wait(750)
-        replayScreen()
         resetTiles()
         resetValues()
         winner = None
