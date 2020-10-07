@@ -103,7 +103,8 @@ Problem 6.1: Done
     The icon of the mouse is being changed by the mouseState variable (True = cross, False = circle).
 
     While importing those images, WHITE is set as alpha channel and being removed through
-    pygame.image.load().convert() and .set_colorkey(WHITE)
+    pygame.image.load().convert() and .set_colorkey(WHITE).
+    The visibility of the mouse cursor is disabled and the new icon is drawn at pygame.mouse.get_pos().
     ###   End    ###
 """
 
@@ -134,7 +135,6 @@ blankTile = pygame.image.load("Images/blank.png")
 crossTile = pygame.image.load("Images/cross.png")
 circleTile = pygame.image.load("Images/circle.png")
 winTile = pygame.image.load("Images/win.png")
-replayTile = pygame.image.load("Images/replay.png")
 greyTile = pygame.image.load("Images/blankMouseOver.png")  # for mouseover visuals
 
 # mouse icons import and convert to remove alpha channel (WHITE)
