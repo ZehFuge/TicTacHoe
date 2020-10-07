@@ -111,18 +111,22 @@ Problem 6.1: Done
 import pygame
 import pygame.event as GAME_EVENTS
 import pygame.time as GAME_TIME
+import pygame.mixer as GAME_MUSIC
 import sys
 
-# initialize pygame
+# initialize pygame and features
 pygame.init()
+# needed for textout put
 pygame.font.init()
+# needed for audio output
+pygame.mixer.init()
 
 # set some screen info
 windowWidth = 404
 windowHeight = 537
 
 window = pygame.display.set_mode((windowWidth, windowHeight))
-pygame.display.set_caption("TicTacHoe - Preorder Edition")
+pygame.display.set_caption("TicTacHoe - Game Of The Year Edition")
 pygame.mouse.set_visible(0)
 
 # pre defined colors
@@ -142,6 +146,11 @@ mouseCross = pygame.image.load("Images/mouseCross.png").convert()
 mouseCross.set_colorkey(WHITE)
 mouseCircle = pygame.image.load("Images/mouseCircle.png").convert()
 mouseCircle.set_colorkey(WHITE)
+
+# set audio to variables
+setTileSound = pygame.mixer.Sound("Audio/setTileSound.wav")
+winnerSound = pygame.mixer.Sound("Audio/winnerSound.ogg")
+
 
 
 # set information for the wincounters for X and Y
@@ -205,6 +214,8 @@ def quitGame():
 def drawTiles():
     global tiles, winCounterX, winCounterO, oldScoreX, oldScoreY, newScoreX, newScoreY, mouseX, mouseY, tileSize
 
+    playOnce = True
+
     # first of all, draw a blank screen for refresh
     window.fill((0, 0, 0))
 
@@ -236,6 +247,7 @@ def drawTiles():
                 and not tiles[index]["win"]:
             if tiles[index]["x"] < mouseX < (tiles[index]["x"] + tileSize) \
                     and tiles[index]["y"] < mouseY < (tiles[index]["y"] + tileSize):
+                #mouseOverSound.play(-1)
                 window.blit(greyTile, (tiles[index]["x"], tiles[index]["y"]))
             else:
                 window.blit(blankTile, (tiles[index]["x"], tiles[index]["y"]))
@@ -281,6 +293,7 @@ def changeState():
                     # change the state of a tile
                     # change tile to cross if current mouseState is cross
                     if mouseState:
+                        setTileSound.play()
                         tiles[index]["state"] = mouseState
                         # the print statement is just for checking events
                         # print("Something happened in Cross State")
@@ -289,6 +302,7 @@ def changeState():
 
                     # change tile to circle if current mouseState is circle
                     elif not mouseState:
+                        setTileSound.play()
                         tiles[index]["state"] = mouseState
                         # the print statement is just for checking events
                         # print("Something happened in Circle State")
@@ -505,12 +519,13 @@ while winner is None:
         GAME_TIME.wait(100)
 
     if winner or not winner and winner is not None:
+        winnerSound.play()
         # show winning line and wait before asking to play again
         # ask player to play again
         raiseWin()
         scoreRefreshCheck()
         drawTiles()
-        GAME_TIME.wait(750)
+        GAME_TIME.wait(1250)
         resetTiles()
         resetValues()
         winner = None
