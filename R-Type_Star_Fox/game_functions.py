@@ -1,6 +1,5 @@
 import pygame
 import sys
-import mainloop
 import window_settings
 
 pygame.init()
@@ -10,5 +9,5 @@ def end_game():
     sys.exit()
 
 def draw():
-    window_settings.window.blit(mainloop.player.player_sprite_sheet, (mainloop.player.player_position[0],
-                                                                      mainloop.player.player_position[1]))
+    # draw background
+    window_settings.window.blit(window_settings.background, (0, 0))
