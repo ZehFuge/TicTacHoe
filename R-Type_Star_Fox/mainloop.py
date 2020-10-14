@@ -7,6 +7,11 @@ import player_settings
 import game_functions
 
 pygame.init()
+pygame.mixer.init()
+
+background_song = "Music/corneria_theme.mp3"
+pygame.mixer.music.load(background_song)
+pygame.mixer.music.play(1)
 
 player = player_settings.Player()
 
