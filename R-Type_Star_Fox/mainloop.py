@@ -16,6 +16,10 @@ while True:
 
     # update drawings
     game_functions.draw()
+    player.draw_player()
 
     # update display
     pygame.display.flip()
+
+    # set time
+    window_settings.clock.tick(window_settings.FPS)
